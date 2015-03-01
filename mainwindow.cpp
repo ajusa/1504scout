@@ -1,23 +1,21 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-QString root = "C:/Users/Arham/Documents/fakeRoot/";
+QString root = "C:/Users/vargascalderonn15/Documents/fakeRoot/";
 QFile file;
-QFile config("number.cfg");
+QFile numberConfig(QStandardPaths::AppDataLocation+"number.cfg");
 QString UUID;
 QString comments;
-QTextStream configStream(&config);
-MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+QTextStream configStream(&numberConfig);
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-
-    if (!config.open(QIODevice::ReadOnly | QIODevice::Text))
+	ui->setupUi(this);
+	if (!numberConfig.open(QIODevice::ReadOnly | QIODevice::Text))
              return;
     UUID = configStream.readAll();
     int UUIDInt = UUID.toInt();
     file.setFileName(root + UUID + ".csv");
-    config.close();
-    ui->setupUi(this);
+	numberConfig.close();
+
     ui->scoutNumber->setValue(UUIDInt);
 }
 MainWindow::~MainWindow()
@@ -162,10 +160,10 @@ void MainWindow::on_noodleGrabNo_clicked()
 
 void MainWindow::on_scoutNumber_valueChanged(const QString &arg1)
 {
-    if (!config.open(QIODevice::WriteOnly | QIODevice::Text))
+	if (!numberConfig.open(QIODevice::WriteOnly | QIODevice::Text))
         return;
     configStream << arg1;
-    config.close();
+	numberConfig.close();
 }
 
 void MainWindow::on_save_clicked()
@@ -194,10 +192,6 @@ void MainWindow::on_save_clicked()
         file.close();
         ui->saveFeedback->setHtml("<html><body><b>Data for team "+teamNum+" saved.</b></body></html>");
 
-        /*QRadioButton* radios[3];
-        radios[0]=ui->binGrabNo;
-        radios[1]=ui->binGrabYes;
-        radios[2]=ui->toteStackNo;*/
         QRadioButton* radios[] =
         {ui->binGrabNo,
          ui->binGrabYes,
@@ -211,11 +205,12 @@ void MainWindow::on_save_clicked()
          ui->stepNo,
          ui->stepYes,
          ui->Tank,
-         ui->toteStackNo,
+		 ui->customLift,
+		 ui->toteStackNo,
          ui->toteStackYes,
          ui->red,
          ui->blue};
-        for (int i=0; i < 16 ; i++){
+		for (int i=0; i < 17 ; i++){
             radios[i]->setAutoExclusive(false);
             radios[i]->setChecked(false);
             radios[i]->setAutoExclusive(true);
@@ -251,4 +246,11 @@ void MainWindow::on_toteLevel_valueChanged(const QString &arg1)
 {
     lvlTotes = arg1;
     ui->toteStackYes->click();
+}
+
+
+void MainWindow::on_liftText_textChanged(const QString arg1)
+{
+	ui->customLift->click();
+	driveType = arg1;
 }

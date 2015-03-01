@@ -80,7 +80,9 @@ private slots:
 
     void on_save_clicked();
 
-    void on_toteLevel_valueChanged(const QString &arg1);
+	void on_toteLevel_valueChanged(const QString &arg1);
+
+	void on_liftText_textChanged(const QString arg1);
 
 private:
     Ui::MainWindow *ui;
