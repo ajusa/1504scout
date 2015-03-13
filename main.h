@@ -10,6 +10,6 @@
 #include <QTextStream>
 #include <QtConcurrent/QtConcurrentRun>
 #include "namespaces.h"
-//MainWindow w;
+
 #endif // MAIN_H
 

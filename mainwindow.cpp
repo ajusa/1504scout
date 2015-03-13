@@ -1,17 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-//QString rootCopy = "C:/Users/vargascalderonn15/Documents/fakerootCopy/";
-//QString rootCopy;
-//QString UUIDCopy;
+
 QString comments;
-//fileHandler * handler;
+
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
 
 	ui->setupUi(this);
 	chooseLocation c(this);
-	data::handler->consoleLog(data::handler->getUUID()+","+data::handler->getRoot());
 	if(data::handler->getUUID()=="0"||data::handler->getRoot() == ""){
 		c.show();
 
@@ -89,12 +86,6 @@ void MainWindow::on_binGrabNo_clicked()
 	ui->binHeightLabel->setEnabled(false);
 	ui->stepYes->setEnabled(false);\
 	ui->stepNo->setEnabled(false);
-}
-
-
-void MainWindow::on_binLevel_textChanged(const QString &arg1)
-{
-binLvl=arg1;
 }
 
 void MainWindow::on_stepYes_clicked()
@@ -255,4 +246,9 @@ void MainWindow::on_liftText_textChanged(const QString arg1)
 void MainWindow::set()
 {
 	return;
+}
+
+void MainWindow::on_binLevel_valueChanged(const QString &arg1)
+{
+	binLvl=arg1;
 }

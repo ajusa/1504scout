@@ -8,7 +8,6 @@
 #include <QTextStream>
 #include "chooselocation.h"
 #include "namespaces.h"
-//#include <vector>
 
 namespace Ui {
 class MainWindow;
@@ -59,8 +58,6 @@ private slots:
 
 	void on_binGrabNo_clicked();
 
-	void on_binLevel_textChanged(const QString &arg1);
-
 	void on_stepYes_clicked();
 
 	void on_stepNo_clicked();
@@ -91,9 +88,10 @@ private slots:
 
 	void on_liftText_textChanged(const QString arg1);
 
+	void on_binLevel_valueChanged(const QString &arg1);
+
 private:
 	Ui::MainWindow *ui;
-	//fileHandler * handler;
 };
 
 #endif // MAINWINDOW_H
