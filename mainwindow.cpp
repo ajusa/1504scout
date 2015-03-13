@@ -1,28 +1,34 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-QString root = "C:/Users/vargascalderonn15/Documents/fakeRoot/";
-QFile file;
-QFile numberConfig(QStandardPaths::AppDataLocation+"number.cfg");
-QString UUID;
+
+//QString rootCopy = "C:/Users/vargascalderonn15/Documents/fakerootCopy/";
+//QString rootCopy;
+//QString UUIDCopy;
 QString comments;
-QTextStream configStream(&numberConfig);
+//fileHandler * handler;
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
-	ui->setupUi(this);
-	if (!numberConfig.open(QIODevice::ReadOnly | QIODevice::Text))
-             return;
-    UUID = configStream.readAll();
-    int UUIDInt = UUID.toInt();
-    file.setFileName(root + UUID + ".csv");
-	numberConfig.close();
 
-    ui->scoutNumber->setValue(UUIDInt);
+	ui->setupUi(this);
+	chooseLocation c(this);
+	data::handler->consoleLog(data::handler->getUUID()+","+data::handler->getRoot());
+	if(data::handler->getUUID()=="0"||data::handler->getRoot() == ""){
+		c.show();
+
+		if(c.exec()==1){
+			close();
+		}
+	}
+	if(data::handler->getUUID()=="0"||data::handler->getRoot() == ""){
+		close();
+	}
+	ui->scoutNumber->setValue(data::handler->getUUID().toInt());
 }
+
 MainWindow::~MainWindow()
 {
-    delete ui;
+	delete ui;
 }
-
 
 void MainWindow::on_teamForm_textChanged(const QString &arg1)
 {
@@ -47,7 +53,7 @@ teamAlliance = "Blue Alliance";
 
 void MainWindow::on_red_clicked()
 {
-    teamAlliance = "Red Alliance";
+	teamAlliance = "Red Alliance";
 }
 
 void MainWindow::on_forklift_clicked()
@@ -57,29 +63,32 @@ liftType = "Forklift";
 
 void MainWindow::on_conveyor_clicked()
 {
-    liftType = "Conveyor";
+	liftType = "Conveyor";
 }
 
 void MainWindow::on_binGrabYes_clicked()
 {
-    binGrab = "Yes";
-    ui->label_7->setEnabled(true);
-    ui->binLevel->setEnabled(true);
-    ui->label_8->setEnabled(true);
-    ui->stepYes->setEnabled(true);\
-    ui->stepNo->setEnabled(true);
+	binGrab = "Yes";
+
+	ui->binHeightLabel->setEnabled(true);
+	ui->binLevel->setEnabled(true);
+	ui->binStepLabel->setEnabled(true);
+	ui->binHeightLabel->setEnabled(true);
+	ui->stepYes->setEnabled(true);\
+	ui->stepNo->setEnabled(true);
 }
 
 
 void MainWindow::on_binGrabNo_clicked()
 {
-    binGrab = "No";
-    ui->label_7->setEnabled(false);
-    ui->binLevel->setEnabled(false);
-    ui->binLevel->clear();
-    ui->label_8->setEnabled(false);
-    ui->stepYes->setEnabled(false);\
-    ui->stepNo->setEnabled(false);
+	binGrab = "No";
+
+	ui->binHeightLabel->setEnabled(false);
+	ui->binLevel->setEnabled(false);
+	ui->binLevel->clear();
+	ui->binHeightLabel->setEnabled(false);
+	ui->stepYes->setEnabled(false);\
+	ui->stepNo->setEnabled(false);
 }
 
 
@@ -90,28 +99,28 @@ binLvl=arg1;
 
 void MainWindow::on_stepYes_clicked()
 {
-    fromStep = "Yes";
+	fromStep = "Yes";
 }
 
 void MainWindow::on_stepNo_clicked()
 {
 
-    fromStep = "No";
+	fromStep = "No";
 }
 
 
 void MainWindow::on_Mecanum_clicked()
 {
-    ui->tankWheels->setEnabled(false);
-    ui->tankWheels->setCurrentIndex(0);
-    driveType = "Mecanum";
+	ui->tankWheels->setEnabled(false);
+	ui->tankWheels->setCurrentIndex(0);
+	driveType = "Mecanum";
 }
 
 
 void MainWindow::on_Tank_clicked()
 {
-    ui->tankWheels->setEnabled(true);
-    driveType = "Tank";
+	ui->tankWheels->setEnabled(true);
+	driveType = "Tank";
 }
 
 
@@ -122,18 +131,18 @@ driveType = arg1;
 
 void MainWindow::on_toteStackYes_clicked()
 {
-    ui->toteLevel->setEnabled(true);
-    ui->label_6->setEnabled(true);
-    toteStacking = "Yes";
+	ui->toteLevel->setEnabled(true);
+	ui->toteLevelLabel->setEnabled(true);
+	toteStacking = "Yes";
 }
 
 
 void MainWindow::on_toteStackNo_clicked()
 {
-    ui->toteLevel->setEnabled(false);
-    ui->label_6->setEnabled(false);
-    ui->toteLevel->clear();
-    toteStacking = "No";
+	ui->toteLevel->setEnabled(false);
+	ui->toteLevelLabel->setEnabled(false);
+	ui->toteLevel->clear();
+	toteStacking = "No";
 }
 
 void MainWindow::on_landfillYes_clicked()
@@ -144,7 +153,7 @@ landRekt = "Yes";
 
 void MainWindow::on_landfillNo_clicked()
 {
-    landRekt = "No";
+	landRekt = "No";
 }
 
 
@@ -155,97 +164,85 @@ noodleGrab = "Yes";
 
 void MainWindow::on_noodleGrabNo_clicked()
 {
-    noodleGrab = "No";
+	noodleGrab = "No";
 }
 
-void MainWindow::on_scoutNumber_valueChanged(const QString &arg1)
+void MainWindow::on_scoutNumber_valueChanged(const QString arg1)
 {
-	if (!numberConfig.open(QIODevice::WriteOnly | QIODevice::Text))
-        return;
-    configStream << arg1;
-	numberConfig.close();
+	data::handler->writeUUID(arg1);
 }
 
 void MainWindow::on_save_clicked()
 {
-    QTextStream out(&file);
-    /*if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-             return;
-    QString line = out.readAll();
-    file.close();*/
-        if (!file.open(QIODevice::Append | QIODevice::Text))
-            return;
+	std::vector<QString> info({
+				teamNum,
+				matchNum,
+				teamAlliance,
+				driveType,
+				liftType,
+				toteStacking,
+				lvlTotes,
+				binGrab,
+				fromStep,
+				binLvl,
+				noodleGrab,
+				landRekt,
+				comments});
 
+	data::handler->writeData(info);
+	ui->saveFeedback->setHtml("<html><body><b>Data for team "+teamNum+" saved.</b></body></html>");
 
-        out << /*line <<*/ teamNum << "," << matchNum << ","
-        << teamAlliance << ","
-        << driveType << ","
-        << liftType << ","
-        << toteStacking << ","
-        << lvlTotes << ","
-        << binGrab << ","
-        << fromStep << ","
-        << binLvl << ","
-        << noodleGrab << ","
-        << landRekt << ","
-        << comments <<  "\n";
-        file.close();
-        ui->saveFeedback->setHtml("<html><body><b>Data for team "+teamNum+" saved.</b></body></html>");
+	std::vector<QRadioButton*> radios(
+	{ui->binGrabNo,
+	 ui->binGrabYes,
+	 ui->landfillNo,
+	 ui->landfillYes,
+	 ui->conveyor,
+	 ui->forklift,
+	 ui->Mecanum,
+	 ui->noodleGrabNo,
+	 ui->noodleGrabYes,
+	 ui->stepNo,
+	 ui->stepYes,
+	 ui->Tank,
+	 ui->customLift,
+	 ui->toteStackNo,
+	 ui->toteStackYes,
+	 ui->red,
+	 ui->blue});
+	for (QRadioButton* radio : radios){
+		radio->setAutoExclusive(false);
+		radio->setChecked(false);
+		radio->setAutoExclusive(true);
+	}
+	this->on_toteStackNo_clicked();
+	this->on_binGrabNo_clicked();
+	this->on_Mecanum_clicked();
 
-        QRadioButton* radios[] =
-        {ui->binGrabNo,
-         ui->binGrabYes,
-         ui->landfillNo,
-         ui->landfillYes,
-         ui->conveyor,
-         ui->forklift,
-         ui->Mecanum,
-         ui->noodleGrabNo,
-         ui->noodleGrabYes,
-         ui->stepNo,
-         ui->stepYes,
-         ui->Tank,
-		 ui->customLift,
-		 ui->toteStackNo,
-         ui->toteStackYes,
-         ui->red,
-         ui->blue};
-		for (int i=0; i < 17 ; i++){
-            radios[i]->setAutoExclusive(false);
-            radios[i]->setChecked(false);
-            radios[i]->setAutoExclusive(true);
-        }
-        this->on_toteStackNo_clicked();
-        this->on_binGrabNo_clicked();
-        this->on_Mecanum_clicked();
+	std::vector<QString*> vars({
+								  &teamNum,
+								  &matchNum,
+								  &teamAlliance,
+								  &driveType,
+								  &liftType,
+								  &toteStacking,
+								  &lvlTotes,
+								  &binGrab,
+								  &fromStep,
+								  &binLvl,
+								  &noodleGrab,
+								  &landRekt});
 
-        QString vars[] =
-        {teamNum,
-         matchNum,
-         teamAlliance,
-         driveType,
-         liftType,
-         toteStacking,
-         lvlTotes,
-         binGrab,
-         fromStep,
-         binLvl,
-         noodleGrab,
-         landRekt};
-
-        for(int i=0; i < 12; i++)
-        {
-            vars[i] = "";
-        }
-
-        /*this->close();
-        this->show();*/
+		for(QString * var : vars)
+		{
+			*var = "";
+		}
 }
 
 void MainWindow::on_toteLevel_valueChanged(const QString &arg1)
 {
-    lvlTotes = arg1;
-    ui->toteStackYes->click();
+	lvlTotes = arg1;
+	ui->toteStackYes->click();
 }
 
 
@@ -253,4 +250,9 @@ void MainWindow::on_liftText_textChanged(const QString arg1)
 {
 	ui->customLift->click();
 	driveType = arg1;
+}
+
+void MainWindow::set()
+{
+	return;
 }
